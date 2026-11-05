@@ -14,7 +14,7 @@ public class BalanceEnquiry extends JFrame {
                 LoginPage.createValueLabel(account.getMaskedCardNumber())));
         body.add(Box.createVerticalStrut(10));
         body.add(LoginPage.createInfoPanel("Available Balance",
-                LoginPage.createValueLabel(LoginPage.formatMoney(account.getBalance()))));
+                LoginPage.createValueLabel(LoginPage.formatMoney(account.balanceEnquiry()))));
         body.add(Box.createVerticalStrut(20));
 
         JButton backButton = LoginPage.createButton("Back to Dashboard", true);

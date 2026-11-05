@@ -1,0 +1,2 @@
+*.class
+!lib/mysql-connector-j-26.10.0.jar

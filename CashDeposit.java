@@ -61,9 +61,16 @@ public class CashDeposit extends JFrame {
             return;
         }
         BigDecimal amount = LoginPage.parseAmount(text);
-        if (amount == null || !account.deposit(amount)) {
+        if (amount == null) {
             LoginPage.showMessage(messageLabel,
                     "Enter a valid amount greater than zero (numbers only, up to 2 decimals).", true);
+            return;
+        }
+        if (!account.deposit(amount)) {
+            String reason = account.getLastError();
+            LoginPage.showMessage(messageLabel, reason == null
+                    ? "Enter a valid amount greater than zero (numbers only, up to 2 decimals)."
+                    : "Deposit could not be completed. " + reason, true);
             return;
         }
         LoginPage.Transaction transaction = account.getLastTransaction();

@@ -21,7 +21,9 @@ public class TransactionHistory extends JFrame {
 
         List<LoginPage.Transaction> transactions = account.getTransactions();
         if (transactions.isEmpty()) {
-            JLabel empty = new JLabel("No transactions yet. Deposits and withdrawals will appear here.");
+            JLabel empty = new JLabel(account.getLastError() != null
+                    ? "Could not load transactions: " + account.getLastError()
+                    : "No transactions yet. Deposits and withdrawals will appear here.");
             empty.setFont(new Font("SansSerif", Font.PLAIN, 14));
             empty.setForeground(LoginPage.MUTED_TEXT);
             empty.setAlignmentX(Component.LEFT_ALIGNMENT);

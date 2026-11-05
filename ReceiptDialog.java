@@ -5,10 +5,6 @@ import java.awt.*;
 import java.awt.print.PrinterException;
 import java.time.format.DateTimeFormatter;
 
-/**
- * Receipt shown after a successful deposit or withdrawal.
- * It only displays data taken from the stored Transaction and the Account.
- */
 public final class ReceiptDialog {
 
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm:ss");

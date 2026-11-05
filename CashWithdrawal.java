@@ -76,7 +76,7 @@ public class CashWithdrawal extends JFrame {
         return grid;
     }
 
-    /** Order: locked? -> PIN empty? -> PIN correct? -> amount valid? -> balance/daily limit -> withdraw -> receipt. */
+    /** Order: locked? -> PIN empty? -> PIN correct? -> amount valid? -> balance/daily limit/ATM cash -> withdraw -> receipt. */
     private void handleWithdraw() {
         if (SessionSecurity.isLocked()) {
             applyLockState();
@@ -107,6 +107,13 @@ public class CashWithdrawal extends JFrame {
                 LoginPage.showMessage(messageLabel, "Daily withdrawal limit exceeded. You can withdraw up to "
                         + LoginPage.formatMoney(account.getRemainingDailyAllowance()) + " more today.", true);
                 return;
+            case INSUFFICIENT_ATM_CASH:
+                LoginPage.showMessage(messageLabel,
+                        "This ATM does not have enough cash for that amount. Try a smaller amount.", true);
+                return;
+            case DATABASE_ERROR:
+                LoginPage.showMessage(messageLabel, "Database error. Please try again.", true);
+                return;
             case INVALID_AMOUNT:
                 LoginPage.showMessage(messageLabel,
                         "Enter a valid amount greater than zero (numbers only, up to 2 decimals).", true);
@@ -115,7 +122,10 @@ public class CashWithdrawal extends JFrame {
                 break;
         }
         if (!account.withdraw(amount)) {
-            LoginPage.showMessage(messageLabel, "Withdrawal could not be completed. Please try again.", true);
+            String reason = account.getLastError();
+            refreshAmounts();
+            LoginPage.showMessage(messageLabel, "Withdrawal could not be completed. "
+                    + (reason == null ? "Please try again." : reason), true);
             return;
         }
 

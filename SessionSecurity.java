@@ -1,6 +1,6 @@
 public final class SessionSecurity {
 
-    public enum Result { SUCCESS, INCORRECT, LOCKED }
+    public enum Result { SUCCESS, INCORRECT, LOCKED, ERROR }
 
     public static final int MAX_ATTEMPTS = 3;
     public static final String LOCKED_MESSAGE =
@@ -22,12 +22,19 @@ public final class SessionSecurity {
     /**
      * Checks a PIN and updates the consecutive-failure counter.
      * A null account (unknown card number at login) counts as a failed attempt.
+     * If the database cannot be reached the result is ERROR and no attempt is counted.
      */
     public static synchronized Result verify(LoginPage.Account account, String pin) {
         if (locked) {
             return Result.LOCKED;
         }
-        if (account != null && account.pinMatches(pin)) {
+        boolean matches;
+        try {
+            matches = account != null && account.pinMatches(pin);
+        } catch (IllegalStateException e) {
+            return Result.ERROR;   // database unreachable: not the user's fault, so no attempt is counted
+        }
+        if (matches) {
             failedAttempts = 0;
             return Result.SUCCESS;
         }
@@ -43,6 +50,9 @@ public final class SessionSecurity {
     public static synchronized String failureMessage(Result result, String what) {
         if (result == Result.LOCKED) {
             return LOCKED_MESSAGE;
+        }
+        if (result == Result.ERROR) {
+            return "Database unavailable. Please try again.";
         }
         int left = attemptsRemaining();
         return "Incorrect " + what + ". " + left + (left == 1 ? " attempt" : " attempts")
